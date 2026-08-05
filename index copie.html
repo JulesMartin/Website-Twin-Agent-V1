@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twin Agents — De l'annonce au bail signé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ============================================================
+       🎨 COULEURS PRINCIPALES DU SITE
+       Pour reskinner tout le site, ne changez QUE ces trois lignes :
+         --brand      : couleur principale (boutons, accents, liens actifs…)
+         --brand-soft : couleur secondaire (fonds clairs, badges, halos)
+         --brand-rgb  : la MÊME couleur principale au format R,G,B
+                        (utilisée pour les ombres/halos translucides —
+                         gardez-la synchronisée avec --brand)
+       ============================================================ */
+    --brand:#0f4c81;
+    --brand-soft:#eaf4fb;
+    --brand-rgb:15, 76, 129;
+
+    --bg:#F6F5F1;
+    --bg-card:#FFFFFF;
+    --ink:#151412;
+    --ink-soft:#3A3733;
+    --muted:#8C877E;
+    --line:#E7E4DC;
+    --accent:var(--brand);
+    --accent-soft:var(--brand-soft);
+    --human:#2B2A66;
+    --human-soft:#ECECFB;
+    --radius:22px;
+    --radius-sm:14px;
+    --shadow:0 30px 60px -25px rgba(30,25,18,.28);
+    --shadow-sm:0 12px 30px -18px rgba(30,25,18,.35);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:1.05}
+  .serif-muted{color:var(--muted)}
+  .accent{color:var(--accent)}
+  a{color:inherit;text-decoration:none}
+  section{position:relative}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:.55em;
+    font-weight:600;font-size:15px;
+    padding:14px 24px;border-radius:100px;
+    border:1px solid transparent;cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    white-space:nowrap;
+  }
+  .btn-dark{background:var(--ink);color:#fff}
+  .btn-dark:hover{transform:translateY(-2px);box-shadow:0 14px 26px -12px rgba(20,18,15,.5)}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:hover{transform:translateY(-2px);box-shadow:0 14px 26px -10px rgba(var(--brand-rgb),.55)}
+  .btn-ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+  .btn .arrow{transition:transform .18s ease}
+  .btn:hover .arrow{transform:translateX(3px)}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);
+    background:#fff;border:1px solid var(--line);
+    padding:7px 14px;border-radius:100px;box-shadow:var(--shadow-sm);
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+
+  /* Nav */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(246,245,241,.78);border-bottom:1px solid transparent;transition:border-color .2s}
+  header.scrolled{border-color:var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:700;font-size:19px;letter-spacing:-.01em}
+  .logo-mark{width:30px;height:30px;position:relative;display:grid;place-items:center}
+  .logo-mark svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:34px;font-size:14.5px;font-weight:500;color:var(--ink-soft)}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  @media(max-width:900px){.nav-links{display:none}.nav-cta .btn-ghost{display:none}}
+
+  /* Hero */
+  .hero{padding:60px 0 30px;text-align:center;position:relative}
+  .hero-glow{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .hero-glow::before{content:"";position:absolute;top:-160px;left:50%;transform:translateX(-50%);width:900px;height:520px;background:radial-gradient(ellipse at center,rgba(var(--brand-rgb),.16),transparent 62%);filter:blur(10px)}
+  .hero-inner{position:relative;z-index:1;max-width:880px;margin:0 auto}
+  .hero h1{font-size:clamp(40px,6.2vw,74px);margin:22px 0 0}
+  .hero p.sub{font-size:clamp(17px,2vw,20px);color:var(--ink-soft);max-width:600px;margin:22px auto 0;line-height:1.5}
+  .hero-cta{display:flex;gap:14px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+  .hero-note{margin-top:16px;font-size:13.5px;color:var(--muted)}
+  .hero-flag{
+    position:absolute;top:18px;left:24px;z-index:2;max-width:190px;
+    background:var(--bg-card);border:1px solid var(--line);border-radius:16px;
+    padding:13px 16px;box-shadow:var(--shadow-sm);
+    font-size:12px;line-height:1.55;color:var(--ink-soft);text-align:left;
+  }
+  .hero-flag b{color:var(--ink);font-weight:600}
+  .hero-flag .sep{display:block;color:var(--line);margin:4px 0;font-size:11px}
+  @media(max-width:900px){.hero-flag{display:none}}
+
+  /* Sélecteur de profil */
+  .picker{margin:0 auto;max-width:1000px;text-align:center}
+  .picker-q{font-family:'Fraunces',serif;font-size:clamp(19px,2.4vw,24px);color:var(--ink)}
+  .picker-hint{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .picker-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+  .pick{
+    text-align:left;cursor:pointer;position:relative;
+    background:var(--bg-card);border:1px solid var(--line);border-radius:26px;
+    padding:30px 30px 26px;
+    transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease, background .28s ease;
+    font-family:inherit;color:inherit;
+  }
+  .pick:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .pick .side{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .pick h3{font-size:clamp(22px,2.6vw,27px);margin:12px 0 0}
+  .pick p{font-size:14.5px;color:var(--ink-soft);margin-top:10px;line-height:1.5}
+  .pick .tagline{margin-top:18px;display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:6px 13px;border-radius:100px;background:var(--bg);border:1px solid var(--line);color:var(--ink-soft)}
+  .pick .state{position:absolute;top:22px;right:24px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:color .25s}
+  .pick.on{border-color:var(--accent);background:#fff;box-shadow:0 24px 50px -28px rgba(var(--brand-rgb),.55)}
+  .pick.on .state{color:var(--accent)}
+  .pick.on .tagline{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+  .pick.tenant.on{border-color:var(--human);box-shadow:0 24px 50px -28px rgba(43,42,102,.5)}
+  .pick.tenant.on .state{color:var(--human)}
+  .pick.tenant.on .tagline{background:var(--human-soft);color:var(--human)}
+  @media(max-width:760px){.picker-grid{grid-template-columns:1fr}.pick{padding:24px}}
+
+  /* Bandeau d'éligibilité */
+  .eligib{
+    margin:34px auto 0;max-width:1000px;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px;
+    background:var(--bg-card);border:1px solid var(--line);border-radius:100px;
+    padding:14px 26px;box-shadow:var(--shadow-sm);
+    font-size:13.5px;color:var(--ink-soft);
+  }
+  .eligib b{color:var(--ink);font-weight:600}
+  .eligib span{white-space:nowrap}
+  .eligib .sep{color:var(--line)}
+  @media(max-width:700px){.eligib{border-radius:20px;flex-direction:column;align-items:center;gap:6px}.eligib .sep{display:none}}
+
+  /* Section heading */
+  .sec{padding:96px 0}
+  .sec-head{max-width:820px}
+  .sec-head.center{margin:0 auto;text-align:center}
+  .sec-head h2{font-size:clamp(30px,4.4vw,50px)}
+  .sec-head p{color:var(--ink-soft);font-size:17px;margin-top:16px}
+
+  /* Problème — lignes alternées image / texte */
+  .prob-intro{max-width:900px;margin:0 auto;text-align:center}
+  .prob-intro h2{font-size:clamp(28px,4.2vw,48px);margin-top:22px}
+  .prob-intro h2 em{font-style:normal;color:var(--accent)}
+  .prob-rows{margin-top:88px}
+  .zz{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-bottom:110px}
+  .zz:last-child{margin-bottom:0}
+  .zz.rev .zz-visual{order:2}
+  .zz-visual{position:relative;padding-bottom:54px}
+  /* Boule bleue floutée d'arrière-plan, débordant derrière chaque image */
+  .photo-ball{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);width:172%;height:205%;border-radius:50%;background:radial-gradient(circle at center,rgba(var(--brand-rgb),.34),rgba(var(--brand-rgb),.14) 48%,transparent 72%);filter:blur(75px);pointer-events:none;z-index:-1}
+  .photo{
+    position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/3;
+    background:linear-gradient(150deg,#e9e5dc 0%,#d9d3c6 45%,#cfc7b6 100%);
+    box-shadow:var(--shadow-sm);
+  }
+  .photo::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 20% 10%,rgba(255,255,255,.55),transparent 60%)}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block;position:relative}
+  .photo .ph-label{
+    position:absolute;left:18px;bottom:16px;z-index:1;
+    font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:rgba(21,20,18,.42);
+  }
+  .zz.p2 .photo{background:linear-gradient(150deg,#dfe0e8 0%,#c9cbd9 50%,#b9bccd 100%)}
+  .zz.p3 .photo{background:linear-gradient(150deg,#f0e2d8 0%,#e4cdbc 50%,#d9bda6 100%)}
+  .float-card{
+    position:absolute;right:-26px;bottom:0;z-index:2;width:min(300px,74%);
+    background:var(--bg-card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:var(--shadow);padding:16px;text-align:left;
+  }
+  .zz.rev .float-card{right:auto;left:-26px}
+  .fc-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .fc-line{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-soft);padding:7px 0;border-bottom:1px solid var(--line)}
+  .fc-line:last-child{border-bottom:0;padding-bottom:0}
+  .fc-line b{color:var(--ink);font-weight:600}
+  .fc-line .warn{color:var(--accent);font-weight:700;font-size:12px}
+  .fc-big{font-family:'Fraunces',serif;font-size:26px;margin:6px 0 2px}
+  .fc-sub{font-size:12px;color:var(--muted)}
+  .fc-block{padding:11px 0;border-bottom:1px solid var(--line)}
+  .fc-block:first-child{padding-top:0}
+  .fc-block:last-child{border-bottom:0;padding-bottom:0}
+  .fc-block h4{font-size:13px;font-weight:600;color:var(--ink)}
+  .fc-block p{font-size:12.5px;color:var(--ink-soft);margin-top:5px;line-height:1.45}
+  .zz-text .n{font-family:'Fraunces',serif;font-size:14px;color:var(--accent);font-weight:600;letter-spacing:.06em}
+  .zz-text h3{font-size:clamp(26px,3.2vw,36px);margin-top:12px}
+  .zz-text .lead{font-size:16px;color:var(--ink-soft);margin-top:16px;max-width:460px}
+  .zz-sub{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:32px;max-width:480px}
+  .zz-sub h4{font-size:14.5px;font-weight:600;font-family:'Inter'}
+  .zz-sub p{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+  @media(max-width:900px){
+    .zz{grid-template-columns:1fr;gap:34px;margin-bottom:72px}
+    .zz.rev .zz-visual{order:0}
+    .zz-visual{padding-bottom:44px}
+    .float-card{right:0;width:min(300px,88%)}
+    .zz.rev .float-card{left:auto;right:0}
+    .prob-rows{margin-top:56px}
+  }
+  @media(max-width:520px){.zz-sub{grid-template-columns:1fr;gap:20px}}
+
+  /* Steps / tunnel */
+  .tunnel{position:relative}
+  .steps{position:relative;margin-top:64px}
+  .track{position:absolute;left:calc(50% - 1px);top:0;bottom:0;width:2px;background:var(--line)}
+  .track-fill{position:absolute;left:0;top:0;width:100%;background:linear-gradient(var(--accent),var(--accent));height:0;transition:height .1s linear}
+  @media(max-width:900px){.track{left:23px}}
+
+  .step{display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;gap:0;margin-bottom:56px;opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+  .step.in{opacity:1;transform:none}
+  .step .text,.step .node,.step .visual{grid-row:1}
+  .step .node{grid-column:2;justify-self:center;align-self:center;position:relative;z-index:2}
+  .node-dot{width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:600;font-size:18px;color:var(--muted);box-shadow:var(--shadow-sm);transition:.4s}
+  .step.in .node-dot{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+
+  .step .text{padding:6px 40px}
+  .step.left .text{grid-column:1;text-align:right}
+  .step.left .visual{grid-column:3}
+  .step.right .text{grid-column:3;text-align:left}
+  .step.right .visual{grid-column:1}
+  .step .tag{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;margin-bottom:12px}
+  .tag-free{background:var(--accent-soft);color:var(--accent)}
+  .tag-paid{background:var(--ink);color:#fff}
+  .tag-soon{background:var(--human-soft);color:var(--human)}
+  .step h3{font-size:clamp(23px,2.6vw,30px)}
+  .step .desc{color:var(--ink-soft);margin-top:12px;font-size:15.5px}
+  .step .ai-note{margin-top:14px;font-size:13.5px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+  .step.left .ai-note{flex-direction:row-reverse}
+  .ai-note .ai-badge{color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:11.5px}
+
+  .step .visual{padding:6px 40px}
+  .mock{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;text-align:left}
+  .mock-head{display:flex;align-items:center;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .mock-head .dots{display:flex;gap:5px}
+  .mock-head .dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+  .mock-head span{font-size:12px;color:var(--muted);font-weight:600}
+
+  @media(max-width:900px){
+    .step{grid-template-columns:46px 1fr;gap:16px;margin-bottom:40px;align-items:start}
+    .step .text,.step .visual{grid-row:auto}
+    .step .node{grid-column:1;grid-row:1;justify-self:center;align-self:start}
+    .step.left .text,.step.right .text{grid-column:2;grid-row:1;text-align:left}
+    .step.left .visual,.step.right .visual{grid-column:2;grid-row:2;padding:16px 0 0}
+    .step .text{padding:0}
+    .step.left .ai-note{flex-direction:row}
+  }
+
+  /* mock internals */
+  .m-row{display:flex;align-items:center;gap:10px;padding:9px 0}
+  .m-avatar{width:32px;height:32px;border-radius:9px;background:var(--human-soft);color:var(--human);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+  .m-name{font-size:13.5px;font-weight:600}
+  .m-sub{font-size:11.5px;color:var(--muted)}
+  .m-right{margin-left:auto;text-align:right}
+  .field{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink-soft);margin-bottom:9px}
+  .field b{color:var(--ink);font-weight:600}
+  .link-pill{display:flex;align-items:center;gap:8px;background:var(--accent-soft);border:1px dashed var(--accent);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--accent);font-weight:600;word-break:break-all}
+  .chip-list{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:100px;background:var(--bg);border:1px solid var(--line);color:var(--ink-soft)}
+  .chip.on{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+  .cal{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px}
+  .cal div{aspect-ratio:1;border-radius:8px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--muted);font-weight:600}
+  .cal div.sel{background:var(--accent);color:#fff;border-color:transparent}
+  .stars{color:var(--accent);letter-spacing:1px;font-size:13px}
+  .sign-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px}
+  .sign-mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none;font-size:15px;font-weight:700}
+  .progress{height:7px;background:var(--bg);border-radius:100px;overflow:hidden;margin-top:6px}
+  .progress i{display:block;height:100%;background:var(--accent);border-radius:100px;width:82%}
+
+  /* IA + humain layer */
+  .layer{background:linear-gradient(180deg,#fff,#faf9f5);border:1px solid var(--line);border-radius:34px;padding:64px 48px;box-shadow:var(--shadow-sm)}
+  .layer-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px}
+  .layer-col{border-radius:22px;padding:30px}
+  .layer-col.ai{background:var(--accent-soft);border:1px solid rgba(var(--brand-rgb),.22)}
+  .layer-col.human{background:var(--human-soft);border:1px solid #dcdcf7}
+  .layer-col h3{font-size:22px}
+  .layer-col.ai h3{color:var(--accent)}
+  .layer-col.human h3{color:var(--human)}
+  .layer-col .role{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+  .layer-col ul{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:11px}
+  .layer-col li{font-size:14.5px;color:var(--ink-soft);line-height:1.45;padding-left:18px;position:relative}
+  .layer-col li::before{content:"—";position:absolute;left:0;opacity:.45}
+  .layer-cta{margin-top:22px}
+  .decide{text-align:center;margin-top:40px;font-family:'Fraunces',serif;font-size:clamp(20px,2.6vw,28px)}
+  .decide b{color:var(--accent)}
+  @media(max-width:820px){.layer{padding:40px 24px}.layer-grid{grid-template-columns:1fr}}
+
+  /* Pricing — cartes retournables */
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:52px}
+  .price{perspective:1400px;background:none;border:0;padding:0;height:430px;cursor:pointer;text-align:left;font-family:inherit;color:inherit;display:flex}
+  .price-inner{position:relative;width:100%;height:100%;transition:transform .65s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+  .price:hover .price-inner,.price.flipped .price-inner{transform:rotateY(180deg)}
+  .pface{
+    position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:var(--bg-card);border:1px solid var(--line);border-radius:22px;
+    padding:28px 24px;display:flex;flex-direction:column;overflow:hidden;
+  }
+  .pback{transform:rotateY(180deg);background:linear-gradient(165deg,#1c1a17,#2a2723);border-color:transparent;color:#fff}
+  .price.feature .pfront{border:1.5px solid var(--accent);box-shadow:0 24px 50px -28px rgba(var(--brand-rgb),.5)}
+  .price .pname{font-family:'Fraunces',serif;font-size:23px;font-weight:600}
+  .price .pfor{font-size:12.5px;color:var(--muted);margin-top:2px;font-weight:500}
+  .price .pprice{font-family:'Fraunces',serif;font-size:34px;margin:18px 0 2px;letter-spacing:-.02em}
+  .price .pprice small{font-size:14px;color:var(--muted);font-family:'Inter';font-weight:500}
+  .price .pdesc{font-size:14px;color:var(--ink-soft);margin-top:8px}
+  .price .flip-hint{margin-top:auto;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .pback .pname{color:#fff}
+  .pback ul{list-style:none;margin:16px 0 20px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:rgba(255,255,255,.8)}
+  .pback li{padding-left:18px;position:relative;line-height:1.45}
+  .pback li::before{content:"—";position:absolute;left:0;color:var(--accent)}
+  .pback .btn{margin-top:auto;justify-content:center;width:100%}
+  @media(max-width:980px){.price-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.price-grid{grid-template-columns:1fr}}
+  .price-note{text-align:center;font-size:13.5px;color:var(--muted);margin-top:26px}
+
+  /* Vidéo (placée plus bas) */
+  .video-sec{padding:20px 0 96px}
+  .showcase{margin:44px auto 0;max-width:940px;position:relative}
+  .video-frame{
+    position:relative;border-radius:26px;overflow:hidden;
+    box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.7);
+    aspect-ratio:16/9;
+  }
+  .video-frame .sky{position:absolute;inset:0;background:
+     radial-gradient(120% 90% at 30% 0%,rgba(var(--brand-rgb),.4),transparent 55%),
+     linear-gradient(160deg,#22314f 0%,#1a2138 55%,#12172a 100%)}
+  .video-ui{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;gap:20px;text-align:center;padding:24px}
+  .play-btn{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.35);color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .2s,background .2s;font-size:22px;padding-left:5px}
+  .play-btn:hover{transform:scale(1.06);background:rgba(255,255,255,.24)}
+  .video-cap{font-size:14px;letter-spacing:.02em;opacity:.9}
+  .video-tag{position:absolute;top:18px;left:18px;font-size:12px;font-weight:600;letter-spacing:.05em;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;padding:6px 12px;border-radius:100px;backdrop-filter:blur(4px)}
+
+  /* Pour qui */
+  .persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:52px}
+  .persona{border-radius:26px;padding:38px;position:relative;overflow:hidden}
+  .persona.owner{background:var(--ink);color:#fff}
+  .persona.tenant{background:#fff;border:1px solid var(--line)}
+  .persona .plabel{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+  .persona h3{font-size:26px;margin:12px 0 12px}
+  .persona.owner h3{color:#fff}
+  .persona p{font-size:15px;line-height:1.55}
+  .persona.owner p{color:rgba(255,255,255,.82)}
+  .persona.tenant p{color:var(--ink-soft)}
+  .persona .quote{font-family:'Fraunces',serif;font-size:19px;margin-top:20px;line-height:1.35}
+  .persona.owner .quote{color:var(--accent)}
+  .persona.tenant .quote{color:var(--ink)}
+  @media(max-width:760px){.persona-grid{grid-template-columns:1fr}.persona{padding:30px}}
+
+  /* Ce qui est possible (cards) */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px}
+  .feat-card{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 26px;box-shadow:var(--shadow-sm);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .feat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .feat-card .fn{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.06em}
+  .feat-card h3{font-size:19px;margin-top:12px}
+  .feat-card p{font-size:14px;color:var(--ink-soft);margin-top:10px;line-height:1.55}
+  @media(max-width:900px){.feat-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.feat-grid{grid-template-columns:1fr}}
+
+  /* Confiance */
+  .trust{background:var(--bg-card);border:1px solid var(--line);border-radius:34px;padding:60px 48px}
+  .trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:44px}
+  .trust-item{text-align:left;padding-top:18px;border-top:2px solid var(--accent)}
+  .trust-item h4{font-size:16px;font-weight:600;font-family:'Inter'}
+  .trust-item p{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+  @media(max-width:820px){.trust{padding:40px 26px}.trust-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.trust-grid{grid-template-columns:1fr}}
+
+  /* Final CTA */
+  .final{text-align:center;padding:100px 0}
+  .final-card{background:linear-gradient(160deg,#1c1a17,#2a2723);border-radius:36px;padding:72px 40px;position:relative;overflow:hidden}
+  .final-card::before{content:"";position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(var(--brand-rgb),.32),transparent 62%)}
+  .final-card .eyebrow{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:#fff;position:relative;z-index:1}
+  .final-card h2{color:#fff;font-size:clamp(32px,5vw,54px);margin:22px 0 0;position:relative;z-index:1}
+  .final-card p{color:rgba(255,255,255,.72);max-width:500px;margin:18px auto 0;position:relative;z-index:1}
+  .final-card .hero-cta{position:relative;z-index:1}
+  .final-card .btn-ghost{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2)}
+  .final-note{color:rgba(255,255,255,.5);font-size:13px;margin-top:16px;position:relative;z-index:1}
+
+  /* Footer */
+  footer{padding:50px 0 60px;border-top:1px solid var(--line);margin-top:20px}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot .logo{font-size:17px}
+  .foot p{font-size:13px;color:var(--muted)}
+  .foot .fl{display:flex;gap:22px;font-size:13.5px;color:var(--ink-soft)}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ===========================================================
+     FILTRAGE PAR PROFIL — doit rester en dernier dans la feuille
+     (sinon .step{display:grid} et .price{display:flex} l'emportent)
+     =========================================================== */
+  .only-owner,.only-tenant,
+  .step.only-owner,.step.only-tenant,
+  .price.only-owner,.price.only-tenant,
+  .inline-owner,.inline-tenant{display:none}
+
+  body[data-profile="owner"] .only-owner{display:block}
+  body[data-profile="tenant"] .only-tenant{display:block}
+  body[data-profile="owner"] .step.only-owner{display:grid}
+  body[data-profile="tenant"] .step.only-tenant{display:grid}
+  body[data-profile="owner"] .price.only-owner{display:flex}
+  body[data-profile="tenant"] .price.only-tenant{display:flex}
+  body[data-profile="owner"] .inline-owner{display:inline}
+  body[data-profile="tenant"] .inline-tenant{display:inline}
+
+  @media(max-width:900px){
+    body[data-profile="owner"] .step.only-owner{display:grid}
+    body[data-profile="tenant"] .step.only-tenant{display:grid}
+  }
+</style>
+</head>
+<body data-profile="owner">
+
+<!-- NAV -->
+<header id="hd">
+  <div class="wrap nav">
+    <a class="logo" href="#top">
+      <span class="logo-mark">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="12" cy="16" r="8" fill="#151412"/><circle cx="20" cy="16" r="8" fill="var(--brand)" fill-opacity="0.9"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
+      </span>
+      Twin Agents
+    </a>
+    <nav class="nav-links">
+      <a href="#tunnel">Le parcours</a>
+      <a href="#autonomie">IA + humain</a>
+      <a href="#pricing">Tarifs</a>
+      <a href="#video">La vidéo</a>
+      <a href="#confiance">Confiance</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#video" class="btn btn-ghost">Voir la vidéo</a>
+      <a href="#final" class="btn btn-dark">Prendre rendez-vous</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO + SÉLECTEUR DE PROFIL -->
+<section class="hero" id="top">
+  <div class="hero-glow"></div>
+  <div class="hero-flag">
+    Propriétaires <b>uniquement en région bruxelloise</b>
+    <span class="sep">·</span>
+    Biens à partir de <b>1 000 € hors charges</b>
+  </div>
+  <div class="wrap hero-inner">
+    <h1>Le futur de la location,<br>c'est <span class="accent">humain + IA.</span></h1>
+    <p class="sub">Deux agents jumeaux : un côté propriétaire, un côté candidat. Chacun prépare son dossier, la mise en location avance toute seule — et c'est vous qui décidez.</p>
+
+    <div class="hero-cta">
+      <a href="#final" class="btn btn-dark">Prendre rendez-vous <span class="arrow">→</span></a>
+      <a href="#video" class="btn btn-ghost">Voir la vidéo (1 min)</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLÈME -->
+<section class="sec" id="probleme" style="padding-top:70px">
+  <div class="wrap">
+    <div class="prob-intro reveal">
+      <h2>Mettre son bien en location, aujourd'hui, c'est <em>gérer seul le désordre</em> — ou payer une agence trop chère et opaque.</h2>
+    </div>
+
+    <div class="prob-rows">
+
+      <!-- 01 · image à gauche -->
+      <div class="zz p1 reveal">
+        <div class="zz-visual">
+          <div class="photo-ball" aria-hidden="true"></div>
+          <div class="photo"><img src="images/1.jpeg" alt="Propriétaire débordé par des candidatures dispersées"></div>
+          <div class="float-card">
+            <div class="fc-block">
+              <h4>Aucun point d'entrée unique</h4>
+              <p>Chaque candidat écrit où il veut, avec ce qu'il veut, quand il veut.</p>
+            </div>
+            <div class="fc-block">
+              <h4>Des visites au jugé</h4>
+              <p>Créneaux fixés à la main, doublons, oublis et relances sans fin.</p>
+            </div>
+          </div>
+        </div>
+        <div class="zz-text">
+          <h3>Tout arrive en même temps, et de partout</h3>
+          <p class="lead">Des dossiers dispersés dans les mails, WhatsApp et les PDF — sans agenda ni messagerie centralisée quand les candidatures tombent.</p>
+        </div>
+      </div>
+
+      <!-- 02 · image à droite -->
+      <div class="zz p2 rev reveal">
+        <div class="zz-visual">
+          <div class="photo-ball" aria-hidden="true"></div>
+          <div class="photo"><img src="images/2.jpeg" alt="Facture d'honoraires d'agence sur un bureau"></div>
+          <div class="float-card">
+            <div class="fc-block">
+              <h4>Un coût difficile à justifier</h4>
+              <p>Un mois de loyer pour un travail que vous ne voyez jamais en détail.</p>
+            </div>
+            <div class="fc-block">
+              <h4>Une décision qui vous échappe</h4>
+              <p>Le candidat retenu vous est présenté, rarement expliqué.</p>
+            </div>
+          </div>
+        </div>
+        <div class="zz-text">
+          <h3>Déléguer, c'est souvent payer pour ne plus rien voir</h3>
+          <p class="lead">Une agence classique : trop chère, trop opaque, et vous perdez la main sur vos propres décisions.</p>
+        </div>
+      </div>
+
+      <!-- 03 · image à gauche -->
+      <div class="zz p3 reveal">
+        <div class="zz-visual">
+          <div class="photo-ball" aria-hidden="true"></div>
+          <div class="photo"><img src="images/3.png" alt="Candidat locataire en salle d'attente"></div>
+          <div class="float-card">
+            <div class="fc-block">
+              <h4>Des données qui circulent</h4>
+              <p>Fiches de paie et pièces d'identité envoyées en clair, conservées sans limite.</p>
+            </div>
+            <div class="fc-block">
+              <h4>Un silence sans explication</h4>
+              <p>Ni retour, ni motif, ni visibilité sur l'avancement de la candidature.</p>
+            </div>
+          </div>
+        </div>
+        <div class="zz-text">
+          <h3>En face, le candidat repart de zéro à chaque annonce</h3>
+          <p class="lead">Le même dossier reconstitué encore et encore, envoyé par mail à des inconnus — sans savoir qui le lit, ni pourquoi ça n'a pas marché.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SÉLECTEUR DE PROFIL -->
+<section class="sec" id="profil" style="padding-top:0">
+  <div class="wrap">
+    <div class="picker reveal">
+      <div class="picker-q">Vous êtes…</div>
+      <div class="picker-hint">Choisissez votre profil</div>
+      <div class="picker-grid">
+        <button class="pick owner on" data-profile="owner" type="button">
+          <span class="state">Sélectionné</span>
+          <span class="side">À gauche</span>
+          <h3>Propriétaire</h3>
+          <p>Je mets mon bien en location à Bruxelles. Je prépare gratuitement, je ne paie qu'au moment où les candidatures arrivent.</p>
+          <span class="tagline">Gratuit au départ, puis premium</span>
+        </button>
+        <button class="pick tenant" data-profile="tenant" type="button">
+          <span class="state">Choisir</span>
+          <span class="side">À droite</span>
+          <h3>Candidat locataire</h3>
+          <p>Je cherche un logement. Je constitue un dossier unique, réutilisable partout, que je contrôle de bout en bout.</p>
+          <span class="tagline">100 % gratuit, sans exception</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LE PARCOURS (animation de scroll) -->
+<section class="sec tunnel" id="tunnel" style="padding-top:26px">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <h2 style="margin-top:18px" class="only-owner">Un seul parcours, <span class="serif-muted">de l'annonce au bail</span></h2>
+      <h2 style="margin-top:18px" class="only-tenant">Un seul dossier, <span class="serif-muted">de la candidature aux clés</span></h2>
+      <p class="only-owner">Six étapes qui reproduisent la méthode d'un professionnel. Vous commencez gratuitement ; vous ne payez qu'au moment où ça devient sérieux.</p>
+      <p class="only-tenant">Quatre étapes, gratuites du début à la fin. Vous remplissez une fois, vous décidez à chaque envoi.</p>
+    </div>
+
+    <div class="steps" id="steps">
+      <div class="track"><div class="track-fill" id="trackFill"></div></div>
+
+      <!-- ============ PARCOURS PROPRIÉTAIRE ============ -->
+
+      <div class="step only-owner left">
+        <div class="text">
+          <h3>Je prépare mon bien</h3>
+          <p class="desc">Adresse, type, photos, checklist documentaire — et une annonce rédigée pour vous. Une fourchette de loyers indicative, jamais imposée : vous fixez votre prix.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> rédige le titre, la description et compare les loyers affichés</span>
+        </div>
+        <div class="node"><div class="node-dot">1</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Préparer mon bien</span></div>
+            <div class="field">Titre · <b>Appartement 2 ch. lumineux — Ixelles</b></div>
+            <div class="field">Loyer de référence · <b>1 150 €</b> <span style="color:var(--muted)">(fourchette 1 020–1 260 €)</span></div>
+            <div class="chip-list"><span class="chip on">Photos 8/10</span><span class="chip on">PEB</span><span class="chip">Superficie</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-owner right">
+        <div class="text">
+          <h3>Je génère mon lien unique</h3>
+          <p class="desc">Un lien de candidature à vous. Vous le diffusez où vous voulez (Immoweb, Facebook, bouche-à-oreille) : toutes les candidatures reviennent au même endroit.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> centralise chaque candidature reçue via le lien</span>
+        </div>
+        <div class="node"><div class="node-dot">2</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Mon lien de candidature</span></div>
+            <div class="link-pill">twinagents.be/c/ixelles-2ch-a3f9</div>
+            <div class="chip-list" style="margin-top:14px"><span class="chip">Immoweb</span><span class="chip">Facebook</span><span class="chip">Immovlan</span><span class="chip">QR code</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-owner left">
+        <div class="text">
+          <h3>Les candidatures arrivent</h3>
+          <p class="desc">C'est là que ça se complique — et que Twin Agents prend le relais. Scoring en étoiles expliqué facteur par facteur, messagerie pseudonymisée, agenda de visites. Jamais de refus automatique.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> score, pseudonymise et organise ; vous, vous comparez</span>
+        </div>
+        <div class="node"><div class="node-dot">3</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Candidatures · 7 reçues</span></div>
+            <div class="m-row"><div class="m-avatar">S</div><div><div class="m-name">Sofia D.</div><div class="m-sub">Dossier complet · CDI</div></div><div class="m-right"><div class="stars">★★★★★</div></div></div>
+            <div class="m-row"><div class="m-avatar">M</div><div><div class="m-name">Marc L.</div><div class="m-sub">2 justificatifs manquants</div></div><div class="m-right"><div class="stars">★★★★☆</div></div></div>
+            <div class="m-row"><div class="m-avatar">Y</div><div><div class="m-name">Yasmine T.</div><div class="m-sub">Garant · historique OK</div></div><div class="m-right"><div class="stars">★★★★☆</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-owner right">
+        <div class="text">
+          <h3>Je compare, je visite, je signe</h3>
+          <p class="desc">Vous organisez les visites depuis l'agenda, vous présélectionnez (la pseudonymisation se lève), puis le bail et ses annexes se génèrent — signature électronique pour tout le monde.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> génère le bail ; la décision finale reste la vôtre</span>
+        </div>
+        <div class="node"><div class="node-dot">4</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Visites &amp; signature</span></div>
+            <div class="cal"><div>Lun</div><div class="sel">Mar 14h</div><div>Mer</div><div class="sel">Jeu 18h</div></div>
+            <div class="sign-row" style="margin-top:14px">
+              <div class="sign-mark">✓</div>
+              <div><div class="m-name">Bail signé électroniquement</div><div class="m-sub">2 parties · valeur légale</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-owner left">
+        <div class="text">
+          <h3>Suivi jusqu'à la remise des clés</h3>
+          <p class="desc">Espace documentaire, rappel informatif de l'enregistrement du bail (via Itsme, par vos soins), et l'option état des lieux <b>Twin Inventory</b> — frais partagés 50/50 avec le locataire.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> archive et suit le dossier jusqu'aux clés</span>
+        </div>
+        <div class="node"><div class="node-dot">5</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Suivi du dossier</span></div>
+            <div class="field">État des lieux · <b>Twin Inventory</b> <span style="color:var(--muted)">125 € / partie</span></div>
+            <div style="font-size:12.5px;color:var(--muted);margin-top:6px">Avancement jusqu'à la remise des clés</div>
+            <div class="progress"><i></i></div>
+            <div class="chip-list" style="margin-top:12px"><span class="chip on">Bail</span><span class="chip on">Enregistrement</span><span class="chip">Clés</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 6 : la vente -->
+      <div class="step only-owner right">
+        <div class="text">
+          <h3>Et si je vends, plus tard ?</h3>
+          <p class="desc">Un bien loué se vend un jour. Le dossier constitué sur Twin Agents — documents, historique locatif, état des lieux, PEB — devient le point de départ de la mise en vente. Même logique : vous préparez seul, vous ajoutez l'humain si vous le voulez, et vous gardez la main sur le prix.</p>
+          <span class="ai-note"><span class="ai-badge">Bientôt</span> le volet vente, construit sur le même dossier</span>
+        </div>
+        <div class="node"><div class="node-dot">6</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Mon bien · vue propriétaire</span></div>
+            <div class="field">Statut · <b>Loué depuis 14 mois</b></div>
+            <div class="field">Dossier du bien · <b>complet</b> <span style="color:var(--muted)">(PEB, plans, EDL, historique)</span></div>
+            <div class="chip-list" style="margin-top:4px"><span class="chip on">Relouer</span><span class="chip">Estimer à la vente</span><span class="chip">Mettre en vente</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PARCOURS CANDIDAT ============ -->
+
+      <div class="step only-tenant left">
+        <div class="text">
+          <h3>Je constitue mon dossier, une seule fois</h3>
+          <p class="desc">Identité, revenus, garant éventuel, composition de ménage. Vous remplissez une fois, la plateforme vous dit exactement ce qu'il manque — et pourquoi c'est demandé.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> vérifie la complétude et signale les pièces manquantes</span>
+        </div>
+        <div class="node"><div class="node-dot">1</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Mon dossier</span></div>
+            <div class="field">Contrat de travail · <b>CDI, ajouté</b></div>
+            <div class="field">Revenus · <b>3 derniers bulletins</b></div>
+            <div style="font-size:12.5px;color:var(--muted);margin-top:6px">Complétude du dossier</div>
+            <div class="progress"><i></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-tenant right">
+        <div class="text">
+          <h3>Je postule en un clic, où je veux</h3>
+          <p class="desc">Vous ouvrez le lien de candidature d'un propriétaire, vous choisissez les pièces que vous transmettez, et vous validez. Aucun envoi automatique sans votre confirmation.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> adapte le dossier au bien, vous validez chaque envoi</span>
+        </div>
+        <div class="node"><div class="node-dot">2</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Envoyer ma candidature</span></div>
+            <div class="link-pill">twinagents.be/c/ixelles-2ch-a3f9</div>
+            <div class="chip-list" style="margin-top:14px"><span class="chip on">Identité</span><span class="chip on">Revenus</span><span class="chip">Garant</span><span class="chip">Historique</span></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:12px">Vous choisissez pièce par pièce ce qui part.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-tenant left">
+        <div class="text">
+          <h3>Je suis anonyme jusqu'à la présélection</h3>
+          <p class="desc">Prénom seulement, coordonnées masquées : le propriétaire évalue votre dossier, pas votre nom. La messagerie et l'agenda de visite passent par la plateforme, et vous savez toujours où vous en êtes.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> pseudonymise ; jamais de refus automatique</span>
+        </div>
+        <div class="node"><div class="node-dot">3</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Ma candidature · Ixelles</span></div>
+            <div class="field">Statut · <b>Présélectionné</b></div>
+            <div class="cal"><div>Lun</div><div class="sel">Mar 14h</div><div>Mer</div><div>Jeu</div></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:12px">Coordonnées transmises uniquement après votre accord.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step only-tenant right">
+        <div class="text">
+          <h3>Je signe, et je réutilise mon dossier</h3>
+          <p class="desc">Bail et annexes signés électroniquement, état des lieux proposé au moment de signer. Et si ce bien-ci ne se fait pas : votre dossier reste prêt pour la prochaine annonce.</p>
+          <span class="ai-note"><span class="ai-badge">IA</span> prépare le bail ; votre dossier reste le vôtre</span>
+        </div>
+        <div class="node"><div class="node-dot">4</div></div>
+        <div class="visual">
+          <div class="mock">
+            <div class="mock-head"><div class="dots"><i></i><i></i><i></i></div><span>Signature</span></div>
+            <div class="sign-row">
+              <div class="sign-mark">✓</div>
+              <div><div class="m-name">Bail signé électroniquement</div><div class="m-sub">2 parties · valeur légale</div></div>
+            </div>
+            <div class="chip-list" style="margin-top:14px"><span class="chip on">Dossier réutilisable</span><span class="chip">Nouvelle candidature</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- OÙ L'IA ET L'HUMAIN INTERVIENNENT -->
+<!-- VIDÉO -->
+<section class="video-sec" id="video">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <h2 style="margin-top:18px">Le concept, <span class="serif-muted">expliqué calmement</span></h2>
+      <p style="max-width:680px;margin:16px auto 0">Une minute, une voix off, les deux profils à l'écran et les flux réels de la plateforme. Rien de plus.</p>
+    </div>
+    <div class="showcase reveal">
+      <div class="video-frame">
+        <div class="sky"></div>
+        <span class="video-tag">Vidéo · 1 min</span>
+        <div class="video-ui">
+          <button class="play-btn" aria-label="Lire la vidéo" type="button">▶</button>
+          <div class="video-cap">« Deux intelligences, une décision : la vôtre. »</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="autonomie" style="padding-top:0">
+  <div class="wrap">
+    <div class="layer reveal">
+      <div class="sec-head center" style="margin:0 auto">
+        <h2 style="margin-top:18px">À chaque étape, <span class="serif-muted">vous choisissez votre niveau d'autonomie</span></h2>
+        <p style="max-width:720px;margin:16px auto 0">L'IA fait le travail invisible. L'humain — un agent IPI — intervient quand vous voulez une présence terrain. C'est un calque par-dessus le même parcours.</p>
+      </div>
+
+      <div class="layer-grid">
+        <div class="layer-col ai">
+          <div class="role">Toujours inclus</div>
+          <h3>Ce que l'IA fait</h3>
+          <ul>
+            <li>Rédige l'annonce et compare les loyers affichés</li>
+            <li>Centralise et score les candidatures en étoiles</li>
+            <li>Pseudonymise la messagerie et gère l'agenda</li>
+            <li>Génère le bail et pilote la signature électronique</li>
+          </ul>
+        </div>
+        <div class="layer-col human">
+          <div class="role">En option · Twin Human</div>
+          <h3>Ajouter l'humain</h3>
+          <ul>
+            <li>Avis argumenté d'un agent IPI sur votre loyer</li>
+            <li>Organisation et réalisation des visites</li>
+            <li>Vérification humaine des étapes sensibles</li>
+            <li>Annonce pro incluse · biens à partir de 1 000 € hors charges</li>
+          </ul>
+        </div>
+      </div>
+      <p class="decide">L'IA prépare, l'humain accompagne — <b>mais c'est toujours vous qui décidez.</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="pricing" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <h2 style="margin-top:18px" class="only-owner">Gratuit pour commencer, <span class="serif-muted">premium quand ça devient sérieux</span></h2>
+      <h2 style="margin-top:18px" class="only-tenant">Côté candidat, <span class="serif-muted">c'est gratuit. Point.</span></h2>
+      <p style="max-width:720px;margin:16px auto 0" class="only-owner">Twin Start est gratuit le temps de préparer votre bien. Vous ne payez qu'au moment où les candidatures arrivent — et vous montez en gamme seulement si vous en avez besoin.</p>
+      <p style="max-width:720px;margin:16px auto 0" class="only-tenant">Aucun abonnement, aucune commission, aucun frais de dossier. Le modèle est payé par le propriétaire.</p>
+    </div>
+
+    <div class="price-grid reveal">
+      <button class="price only-owner" type="button">
+        <div class="price-inner">
+          <div class="pface pfront">
+            <div class="pname">Twin Start</div>
+            <div class="pfor">Propriétaire · préparation</div>
+            <div class="pprice">Gratuit</div>
+            <div class="pdesc">Je prépare mon bien et je collecte les candidatures. Gratuit au départ, puis passage payant au moment de trier.</div>
+            <div class="flip-hint">Survolez pour le détail</div>
+          </div>
+          <div class="pface pback">
+            <div class="pname">Twin Start</div>
+            <ul>
+              <li>Bien préparé + checklist documentaire</li>
+              <li>Annonce rédigée avec l'IA</li>
+              <li>Fourchette de loyers indicative</li>
+              <li>Lien unique de candidature</li>
+            </ul>
+            <a href="#final" class="btn btn-ghost">Commencer gratuitement</a>
+          </div>
+        </div>
+      </button>
+
+      <button class="price feature only-owner" type="button">
+        <div class="price-inner">
+          <div class="pface pfront">
+            <div class="pname">Twin Action</div>
+            <div class="pfor">Propriétaire · par bien</div>
+            <div class="pprice">250 € <small>TVAC</small></div>
+            <div class="pdesc">Je réalise ma mise en location, du tri des candidatures au bail signé.</div>
+            <div class="flip-hint">Survolez pour le détail</div>
+          </div>
+          <div class="pface pback">
+            <div class="pname">Twin Action</div>
+            <ul>
+              <li>Scoring en étoiles expliqué facteur par facteur</li>
+              <li>Messagerie pseudonymisée + agenda de visites</li>
+              <li>Bail, annexes et signature électronique</li>
+              <li>Aucun refus automatique : vous décidez</li>
+            </ul>
+            <a href="#final" class="btn btn-accent">Activer Twin Action</a>
+          </div>
+        </div>
+      </button>
+
+      <button class="price only-owner" type="button">
+        <div class="price-inner">
+          <div class="pface pfront">
+            <div class="pname">Twin Human</div>
+            <div class="pfor">Propriétaire · avec agent IPI</div>
+            <div class="pprice">750 € <small>TVAC</small></div>
+            <div class="pdesc">J'ajoute une intelligence humaine sur le terrain. 350 € à la souscription, 400 € à la signature.</div>
+            <div class="flip-hint">Survolez pour le détail</div>
+          </div>
+          <div class="pface pback">
+            <div class="pname">Twin Human</div>
+            <ul>
+              <li>Agent IPI réel, présence terrain</li>
+              <li>Annonce pro incluse (Immoweb…)</li>
+              <li>Visites organisées et réalisées pour vous</li>
+              <li>Biens à partir de 1 000 € hors charges</li>
+            </ul>
+            <a href="#final" class="btn btn-ghost">Parler à un agent</a>
+          </div>
+        </div>
+      </button>
+
+      <button class="price only-owner" type="button">
+        <div class="price-inner">
+          <div class="pface pfront">
+            <div class="pname">Twin Inventory</div>
+            <div class="pfor">Option · état des lieux</div>
+            <div class="pprice">250 € <small>TVAC</small></div>
+            <div class="pdesc">Je sécurise l'entrée dans les lieux. Frais partagés 50/50 : 125 € par partie.</div>
+            <div class="flip-hint">Survolez pour le détail</div>
+          </div>
+          <div class="pface pback">
+            <div class="pname">Twin Inventory</div>
+            <ul>
+              <li>Expert désigné d'un commun accord</li>
+              <li>Intégré au bail généré</li>
+              <li>Proposé au moment de signer</li>
+              <li>Réutilisé à la sortie du locataire</li>
+            </ul>
+            <a href="#final" class="btn btn-ghost">En savoir plus</a>
+          </div>
+        </div>
+      </button>
+
+      <button class="price only-tenant" type="button">
+        <div class="price-inner">
+          <div class="pface pfront">
+            <div class="pname">Twin Start</div>
+            <div class="pfor">Candidat locataire</div>
+            <div class="pprice">Gratuit</div>
+            <div class="pdesc">Mon dossier, constitué une fois et réutilisable partout. Sans abonnement ni frais de dossier.</div>
+            <div class="flip-hint">Survolez pour le détail</div>
+          </div>
+          <div class="pface pback">
+            <div class="pname">Twin Start</div>
+            <ul>
+              <li>Dossier unique, réutilisable sur tous les biens</li>
+              <li>Vous choisissez les pièces transmises</li>
+              <li>Pseudonymisation jusqu'à la présélection</li>
+              <li>Signature électronique du bail incluse</li>
+            </ul>
+            <a href="#final" class="btn btn-accent">Créer mon dossier</a>
+          </div>
+        </div>
+      </button>
+
+      <button class="price only-tenant" type="button">
+        <div class="price-inner">
+          <div class="pface pfront">
+            <div class="pname">Twin Inventory</div>
+            <div class="pfor">Option · état des lieux</div>
+            <div class="pprice">125 € <small>TVAC</small></div>
+            <div class="pdesc">La seule dépense possible, et seulement si les deux parties le décident : la moitié de l'état des lieux.</div>
+            <div class="flip-hint">Survolez pour le détail</div>
+          </div>
+          <div class="pface pback">
+            <div class="pname">Twin Inventory</div>
+            <ul>
+              <li>Frais partagés 50/50 avec le propriétaire</li>
+              <li>Expert désigné d'un commun accord</li>
+              <li>Vous protège aussi à la sortie</li>
+              <li>Jamais imposé, toujours proposé</li>
+            </ul>
+            <a href="#final" class="btn btn-ghost">En savoir plus</a>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <p class="price-note only-owner">Test limité aux 19 communes de Bruxelles-Capitale · biens à partir de 1 000 € hors charges.</p>
+    <p class="price-note only-tenant">Gratuit pour le candidat, quel que soit le bien. Le modèle est financé par le propriétaire.</p>
+  </div>
+</section>
+
+<!-- CE QUI EST POSSIBLE (cards) -->
+<section class="sec" id="fonctionnalites" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <h2 style="margin-top:18px">Toute la méthode d'un pro, <span class="serif-muted">dans un seul environnement</span></h2>
+      <p style="max-width:720px;margin:16px auto 0">De l'annonce à la remise des clés, chaque étape reproduit le travail d'un professionnel de l'immobilier — automatisée par l'IA, vérifiable à tout moment.</p>
+    </div>
+
+    <div class="feat-grid reveal">
+      <div class="feat-card">
+        <span class="fn">01</span>
+        <h3>Annonce rédigée par l'IA</h3>
+        <p>Titre, description et présentation générés à partir des informations du bien.</p>
+      </div>
+      <div class="feat-card">
+        <span class="fn">02</span>
+        <h3>Un lien, un point d'entrée unique</h3>
+        <p>Diffusez votre lien de candidature où vous voulez. Chaque réponse revient centralisée au même endroit.</p>
+      </div>
+      <div class="feat-card">
+        <span class="fn">03</span>
+        <h3>Scoring en étoiles, expliqué</h3>
+        <p>Complétude, capacité financière, garanties, historique : chaque facteur est pondéré et affiché.</p>
+      </div>
+      <div class="feat-card">
+        <span class="fn">04</span>
+        <h3>Messagerie et agenda centralisés</h3>
+        <p>Échangez avec les candidats sans exposer leurs coordonnées, organisez les visites depuis un agenda unique.</p>
+      </div>
+      <div class="feat-card">
+        <span class="fn">05</span>
+        <h3>Bail et signature électronique</h3>
+        <p>Le bail et ses annexes se génèrent automatiquement à partir du dossier retenu. Signature électronique pour les deux parties.</p>
+      </div>
+      <div class="feat-card">
+        <span class="fn">06</span>
+        <h3>Twin Inventory, l'état des lieux en option</h3>
+        <p>Un expert désigné d'un commun accord sécurise l'entrée dans les lieux. Frais partagés à parts égales entre propriétaire et locataire.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIANCE -->
+<section class="sec" id="confiance" style="padding-top:0">
+  <div class="wrap">
+    <div class="trust reveal">
+      <div class="sec-head center" style="margin:0 auto">
+        <h2 style="margin-top:18px">Fait en Belgique, <span class="serif-muted">encadré et respectueux</span></h2>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-item">
+          <h4>RGPD &amp; minimisation</h4>
+          <p>Collecte progressive, accès limité aux données nécessaires à chaque étape, consentement avant chaque transmission.</p>
+        </div>
+        <div class="trust-item">
+          <h4>Pseudonymisation</h4>
+          <p>Prénoms seulement et coordonnées masquées pendant toute la candidature ; levée uniquement à la présélection.</p>
+        </div>
+        <div class="trust-item">
+          <h4>Jamais de refus automatique</h4>
+          <p>Le scoring en étoiles est informatif et pondéré. Aucune exclusion automatique — la décision finale reste au propriétaire.</p>
+        </div>
+        <div class="trust-item">
+          <h4>Agents IPI réels</h4>
+          <p>Toute intervention terrain est réalisée par de vrais agents IPI. Test sur les 19 communes de Bruxelles-Capitale.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="final" id="final">
+  <div class="wrap">
+    <div class="final-card reveal">
+      <h2>Prêt à passer<br>de l'annonce au bail signé ?</h2>
+      <p>Réservez un créneau de 20 minutes. On parcourt le tunnel avec vous, sur votre cas — sans engagement.</p>
+      <div class="hero-cta">
+        <a href="https://calendly.com" target="_blank" rel="noopener" class="btn btn-accent">Choisir un créneau <span class="arrow">→</span></a>
+        <a href="#video" class="btn btn-ghost">Voir la vidéo (1 min)</a>
+      </div>
+      <p class="final-note">Sans engagement · réponse sous 24 h · région bruxelloise</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="#top">
+      <span class="logo-mark">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="12" cy="16" r="8" fill="#151412"/><circle cx="20" cy="16" r="8" fill="var(--brand)" fill-opacity="0.9"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
+      </span>
+      Twin Agents
+    </a>
+    <div class="fl">
+      <a href="#tunnel">Le parcours</a>
+      <a href="#pricing">Tarifs</a>
+      <a href="#video">La vidéo</a>
+      <a href="#confiance">Confiance</a>
+      <a href="#final">Rendez-vous</a>
+    </div>
+    <p>© 2026 Twin Agents · Location entre particuliers · Bruxelles-Capitale</p>
+  </div>
+</footer>
+
+<script>
+  // Nav border on scroll
+  const hd = document.getElementById('hd');
+  window.addEventListener('scroll', () => {
+    hd.classList.toggle('scrolled', window.scrollY > 8);
+  });
+
+  // Reveal on scroll (generic)
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); } });
+  }, { threshold: 0.16 });
+  document.querySelectorAll('.reveal, .step').forEach(el => io.observe(el));
+
+  // Sélecteur de profil : filtre toute la page
+  const picks = document.querySelectorAll('.pick');
+  picks.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const profile = btn.dataset.profile;
+      if (document.body.dataset.profile === profile) return;
+      document.body.dataset.profile = profile;
+      picks.forEach(p => {
+        const on = p === btn;
+        p.classList.toggle('on', on);
+        p.querySelector('.state').textContent = on ? 'Sélectionné' : 'Choisir';
+      });
+      // relance l'animation des étapes du parcours affiché
+      document.querySelectorAll('.step').forEach(s => { s.classList.remove('in'); io.observe(s); });
+      requestAnimationFrame(updateTrack);
+    });
+  });
+
+  // Ligne de progression du parcours
+  const steps = document.getElementById('steps');
+  const fill = document.getElementById('trackFill');
+  function updateTrack(){
+    if(!steps) return;
+    const rect = steps.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const total = rect.height;
+    const scrolled = Math.min(Math.max(vh*0.55 - rect.top, 0), total);
+    fill.style.height = (scrolled/total*100) + '%';
+  }
+  window.addEventListener('scroll', updateTrack);
+  window.addEventListener('resize', updateTrack);
+  updateTrack();
+
+  // Packages : retournement au clic (utile au tactile, où le hover n'existe pas)
+  document.querySelectorAll('.price').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      card.classList.toggle('flipped');
+    });
+  });
+
+  // Vidéo : placeholder
+  document.querySelector('.play-btn')?.addEventListener('click', () => {
+    alert('La vidéo (1 min, voix off + profils à l’écran) sera intégrée ici.');
+  });
+</script>
+</body>
+</html>
